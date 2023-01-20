@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block body %}
+	<h1><center>{{ app_name }}</center></h1>
+
+	<div id="container">
+		{% for player in game.players: %}
+			<div id="player">
+				<p>{{ player.name}}</p>
+				{% for card in player.cards: %}
+					<div id="card">
+						<img src="/static/image/{{card.name}}_{{card.color}}.jpg"> <br> {{card.id}}
+					</div>
+				{% endfor %}
+				<div id="clear"></div>
+				<div>
+					{{player.array_cards}}<br>
+					{{player.array_colors}}
+				</div>
+			</div>
+		{% endfor %}
+		<div id="player">
+		<p>Musik</p>
+		{% for card in game.musik: %}
+			<div id="card">
+				<img src="/static/image/{{card.name}}_{{card.color}}.jpg"> <br> {{card.id}}
+			</div>
+		{% endfor %}
+		</div>
+		<div id="clear"></div>
+	</div>
+{% endblock %}
+

@@ -1,0 +1,45 @@
+body{
+	background-color: #000000;
+	color:blue;
+}
+
+img{
+	border: 1px solid black;
+}
+
+#container{
+	padding:20px;
+	margin-left:auto;
+	margin-right:auto;
+	background:#DCDCDC; 
+	height:100%; 
+	width:65%;
+}
+
+#clear{
+	clear:both;
+}
+
+#card{
+	float: left;
+	margin-left: 15px;
+}
+
+#player{
+	float: left;
+	padding:20px;
+	border: 1px dotted blue;
+	margin:5px;
+}
+
+table{
+	border: 1px solid black;
+}
+
+tr{
+	padding:10px;
+}
+
+#points{
+	text-align: center;
+}
