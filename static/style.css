@@ -22,7 +22,7 @@ img{
 
 #card{
 	float: left;
-	margin-left: 15px;
+	margin-left: 5px;
 }
 
 #player{
@@ -30,6 +30,8 @@ img{
 	padding:20px;
 	border: 1px dotted blue;
 	margin:5px;
+	width:45%;
+	height:500px;
 }
 
 table{

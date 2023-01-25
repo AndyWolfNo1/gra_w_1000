@@ -15,7 +15,21 @@
 				<div id="clear"></div>
 				<div>
 					{{player.array_cards}}<br>
-					{{player.array_colors}}
+					{{player.array_colors}}<br>
+					<p>Oczka: {{player.sum_points}}</p>
+					<span>Pary:</span>
+					{% if player.array_colors[0] == 1 %}
+						<p>Trefl</p>
+					{% endif %}
+					{% if player.array_colors[1] == 1 %}
+						<p>Pik</p>
+					{% endif %}
+					{% if player.array_colors[2] == 1 %}
+						<p>Kier</p>
+					{% endif %}
+					{% if player.array_colors[3] == 1 %}
+						<p>Karo</p>
+					{% endif %}	
 				</div>
 			</div>
 		{% endfor %}
@@ -27,6 +41,7 @@
 			</div>
 		{% endfor %}
 		</div>
+		<p>Licytacja: {{game.players[game.max_auction[0]]}}<br>{{game.auction[game.max_auction[0]]}}</p>
 		<div id="clear"></div>
 	</div>
 {% endblock %}

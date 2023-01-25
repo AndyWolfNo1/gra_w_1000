@@ -90,7 +90,6 @@ class Player:
         self.ID = int()
         self.colors = {'trefl': 100, 'pik' : 80, 'kier': 60, 'karo': 40}
         self.name = name
-        self.array_card = 1
 
     def __str__(self):
         return self.name
@@ -112,46 +111,16 @@ class Player:
         for card in self.cards:
             self.array_cards[card.id-1]=1
 
-    def check_pairs(self):
-        result = []
-        points = 0
-        for color in self.colors:
-            res = 0
-            for card in self.cards:
-                if card.color == color and card.name == "K":
-                    res += 4
-                elif card.color == color and card.name == "Q":
-                    res += 3
-                if res == 7:
-                    result.append(color)
-                    points += self.colors[color]
-                    res = 0
-        self.pairs = result
-        self.points_pairs = points
-
-        if len(self.pairs) > 0:
-            for color in self.pairs:
-                sumc = sum(card.value for card in self.cards if card.color == color)
-                self.sum_colors = {color: sumc}
-        else:
-            self.sum_colors = 0
-
-        amount = 0
-        for i in range(len(self.cards)):
-            amount += self.cards[i].value
-        self.amount_points = amount
-
-        self.amount_point_pairs = sum([self.colors[i] for i in self.pairs])
-
     def create_colors_array(self, colors):
         self.array_colors = colors
    
     def take_card(self, cards, musik = None):
         if musik == None:
             self.cards = cards
-            self.check_pairs()
             self.sorted_cards()
             self.create_cards_array()
+        if musik == True:
+            self.cards += cards
 
     def print_cards(self):
         buf = []
@@ -160,39 +129,22 @@ class Player:
             buf.append(name)
         print(buf)
 
-
-    def calc_coefficient(self):
-        self.coefficient = 0
-        
-        def check_number_card(cards, nr):
-            for i in range(len(cards)):
-                if cards[i].id == nr:
-                    return True
-            else:
-                return False
-            
-        for pair in self.pairs:
-            if pair == 'trefl':
-                if check_number_card(self.cards, 1)==True and check_number_card(self.cards, 2)==True:
-                    self.coefficient += 130
-                elif check_number_card(self.cards, 1)==True or check_number_card(self.cards, 2)==True:
-                    self.coefficient += 110
-            if pair == 'pik':
-                if check_number_card(self.cards, 7)==True and check_number_card(self.cards, 8)==True:
-                    self.coefficient += 100
-                elif check_number_card(self.cards, 7)==True or check_number_card(self.cards, 8)==True:
-                    self.coefficient += 90
-            if pair == 'kier':
-                if check_number_card(self.cards, 13)==True and check_number_card(self.cards, 14)==True:
-                    self.coefficient += 80
-                elif check_number_card(self.cards, 13)==True or check_number_card(self.cards, 14)==True:
-                    self.coefficient += 70
-            if pair == 'karo':
-                if check_number_card(self.cards, 19)==True and check_number_card(self.cards, 20)==True:
-                    self.coefficient += 60
-                elif check_number_card(self.cards, 19)==True or check_number_card(self.cards, 20)==True:
-                    self.coefficient += 50
-            
+    def gen_auction(self):
+        buff = []
+        c = 1.
+        suma = 0.
+        res = self.array_cards.reshape(4,6)
+        for i in range(4):
+            buff.append(list(res[i]))
+        for i in range(4):
+            #redukcja dziewiątek
+            buff[i][5] = 0.
+            buff[i][4] = 0.
+            #dodawanie wartoci koloru
+            buff[i].append(self.array_colors[i])
+            suma += sum(buff[i])*c
+            c -= 0.2
+        self.auction = round(suma, 3)
 
 class Game:
     _instance = None
@@ -210,7 +162,7 @@ class Game:
     def __init__(self):
         self.players = []
         self.perceptron()
-    
+        
     def suffle_cards(self):
         self.new_cards = Deck().take()
         shuffled_cards = []
@@ -224,26 +176,28 @@ class Game:
         self.players_name = [self.players[i].name for i in range(len(self.players))]
         self.players_cards = [self.players[i].cards for i in range(len(self.players))]
         self.s_cards = self.suffle_cards()
-        order_of_hands = [[self.s_cards[1], self.s_cards[2],
-                           self.s_cards[10], self.s_cards[11],
+        order_of_hands = [[self.s_cards[0], self.s_cards[1],
+                           self.s_cards[9], self.s_cards[10],
+                           self.s_cards[19]],
+                          [self.s_cards[2], self.s_cards[3],
+                           self.s_cards[12], self.s_cards[13],
                            self.s_cards[20]],
-                          [self.s_cards[3], self.s_cards[4],
-                           self.s_cards[13], self.s_cards[14],
+                          [self.s_cards[4], self.s_cards[6],
+                           self.s_cards[14], self.s_cards[15],
                            self.s_cards[21]],
-                          [self.s_cards[5], self.s_cards[7],
-                           self.s_cards[15], self.s_cards[16],
-                           self.s_cards[22]],
-                          [self.s_cards[8], self.s_cards[9],
-                           self.s_cards[17], self.s_cards[19],
-                           self.s_cards[23]]]
+                          [self.s_cards[7], self.s_cards[8],
+                           self.s_cards[16], self.s_cards[18],
+                           self.s_cards[22]]]
 
         self.players = players
         self.musik = []
-        self.musik.append(self.s_cards[6:19:6])
+        # 5, 11, 17, 23
+        self.musik.append(self.s_cards[5::6])
         self.musik = sorted(self.musik[0], key=lambda card: card.id, reverse=False)
         
         for i in range(4):
             self.players[i].take_card(order_of_hands[i])
+            self.players[i].ID = i
         self.predict_players()
     
     def show_game(self):
@@ -272,6 +226,19 @@ class Game:
             pc = pd.DataFrame(pc, columns=self.indexs)
             y_pred = self.model.predict(pc)
             self.players[i].create_colors_array(y_pred[0])
+            self.players[i].gen_auction()
+            
+    def auction(self):
+        self.auction = dict()
+        for i in range(4):
+            self.auction[self.players[i].ID] = self.players[i].auction
+        maximum = max([x for x in self.auction.values()])
+        self.max_auction_id = [key for key, value in self.auction.items() if value == maximum]
+
+    def step1(self):
+        self.auction()
+        self.players[self.max_auction_id[0]].take_card(self.musik, musik=True)
+        self.players[self.max_auction_id[0]].sorted_cards()
 
 
 class Statistics:

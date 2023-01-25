@@ -18,7 +18,8 @@ game = Game()
 @app.route('/',methods = ['POST', 'GET'])
 def start():
     game.deal_the_cards(players)
-    return render_template('start.html')
+    game.step1()
+    return render_template('start.html', game=game)
     
 @app.route('/test',methods = ['POST', 'GET'])
 def data():

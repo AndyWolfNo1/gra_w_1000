@@ -1,24 +1,18 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from tysiac import *
-<<<<<<< HEAD
-from perceptrons import Perceptron
-import csv
-=======
 import csv
 import pandas as pd
 import random
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
->>>>>>> 9ac6399 (zmiany liczenia pkt, dodano perceptron)
 
 names = ['Marek', 'Stefan', 'Janusz', 'Bogdan']
 players = [Player(name) for name in names]
 cards = Deck().take()
 game = Game()
 game.deal_the_cards(players)
-<<<<<<< HEAD
-statistics = Statistics(game)
 
 def write_result(data):
     file = open('test.csv', 'w+', newline ='') 
@@ -48,31 +42,7 @@ def testing():
     write_result(data)
 
 
-card1 = cards[0]
-card2 = cards[6]
-card3 = cards[12]
-card4 = cards[18]
-card5 = cards[22]
 
-game.players[0].take_card([card1, card2, card3, card4, card5])
-
-gc = game.players[0].cards
-
-pred = np.arange(10, 210, 10)
-=======
-#statistics = Statistics(game)
-card1 = cards[2]
-card2 = cards[3]
-card3 = cards[8]
-card4 = cards[9]
-card5 = cards[22]
-cards5 = [card1,card2,card3,card4,card5]
-
-#game.players[0].take_card([card1, card2, card3, card4, card5])
-title ="A_trefl,10_trefl,K_trefl,D_trefl,J_trefl,9_trefl,A_pik,10_pik,K_pik,D_pik,J_pik,9_pik,A_kier,10_kier,K_kier,D_kier,J_kier,9_kier,A_karo,10_karo,K_karo,D_karo,J_karo,9_karo,trefl,pik,kier,karo"
-index = title.split(',')
-indexs = index[:-4]
-colors = index[-4:]
 
 def generator_danych(iters=100):
     data_good = []
@@ -97,3 +67,9 @@ def generator_danych(iters=100):
         write.writerows(data) 
     return data
 
+game.step1()
+
+
+
+
+  
