@@ -143,7 +143,7 @@ class Player:
             #dodawanie wartoci koloru
             buff[i].append(self.array_colors[i])
             suma += sum(buff[i])*c
-            c -= 0.2
+            c -= 0.20
         self.auction = round(suma, 3)
 
 class Game:
@@ -200,14 +200,6 @@ class Game:
             self.players[i].ID = i
         self.predict_players()
     
-    def show_game(self):
-        self.players = []
-        for i in range(len(self.game.players)):
-            self.players.append([{self.game.players[i].name : self.game.players[i].cards}, 
-                                 self.game.players[i].pairs, self.game.players[i].amount_points])
-        return self.players
-        self.predict_players()
-
     def perceptron(self):
         index = self.title.split(',')
         self.indexs = index[:-4]
@@ -237,8 +229,13 @@ class Game:
 
     def step1(self):
         self.auction()
-        self.players[self.max_auction_id[0]].take_card(self.musik, musik=True)
-        self.players[self.max_auction_id[0]].sorted_cards()
+        if len(self.max_auction_id)==1:
+            self.players[self.max_auction_id[0]].take_card(self.musik, musik=True)
+            self.players[self.max_auction_id[0]].sorted_cards()
+        else:
+            #do poprawy
+            self.players[self.max_auction_id[0]].take_card(self.musik, musik=True)
+            self.players[self.max_auction_id[0]].sorted_cards()
 
 
 class Statistics:

@@ -68,8 +68,3 @@ def generator_danych(iters=100):
     return data
 
 game.step1()
-
-
-
-
-  
