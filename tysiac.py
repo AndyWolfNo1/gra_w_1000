@@ -133,9 +133,9 @@ class Player:
         buff = []
         c = 1.
         suma = 0.
-        res = self.array_cards.reshape(4,6)
+        self.reshape_cards = self.array_cards.reshape(4,6)
         for i in range(4):
-            buff.append(list(res[i]))
+            buff.append(list(self.reshape_cards[i]))
         for i in range(4):
             #redukcja dziewiątek
             buff[i][5] = 0.
@@ -221,21 +221,29 @@ class Game:
             self.players[i].gen_auction()
             
     def auction(self):
-        self.auction = dict()
+        self.auction_res = dict()
         for i in range(4):
-            self.auction[self.players[i].ID] = self.players[i].auction
-        maximum = max([x for x in self.auction.values()])
-        self.max_auction_id = [key for key, value in self.auction.items() if value == maximum]
+            self.auction_res[self.players[i].ID] = self.players[i].auction
+        maximum = max([x for x in self.auction_res.values()])
+        self.max_auction_id = [key for key, value in self.auction_res.items() if value == maximum]
 
     def step1(self):
         self.auction()
         if len(self.max_auction_id)==1:
             self.players[self.max_auction_id[0]].take_card(self.musik, musik=True)
             self.players[self.max_auction_id[0]].sorted_cards()
+            for i in range(4):
+                self.players[i].create_cards_array()
+                self.players[i].gen_auction()
+            self.predict_players()
         else:
             #do poprawy
             self.players[self.max_auction_id[0]].take_card(self.musik, musik=True)
             self.players[self.max_auction_id[0]].sorted_cards()
+            for i in range(4):
+                self.players[i].create_cards_array()
+                self.players[i].gen_auction()
+            self.predict_players()
 
 
 class Statistics:

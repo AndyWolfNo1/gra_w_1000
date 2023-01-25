@@ -7,8 +7,10 @@ import random
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
+from sklearn import metrics
 
 names = ['Marek', 'Stefan', 'Janusz', 'Bogdan']
+title = "A_trefl,10_trefl,K_trefl,D_trefl,J_trefl,9_trefl,A_pik,10_pik,K_pik,D_pik,J_pik,9_pik,A_kier,10_kier,K_kier,D_kier,J_kier,9_kier,A_karo,10_karo,K_karo,D_karo,J_karo,9_karo,trefl,pik,kier,karo\n"
 players = [Player(name) for name in names]
 cards = Deck().take()
 game = Game()
@@ -18,53 +20,71 @@ def write_result(data):
     file = open('test.csv', 'w+', newline ='') 
     with file:     
         write = csv.writer(file)
-        file.write("card1,card2,card3,card4,card5,result\n")
-        write.writerows(data) 
-
-def rozegraj_gre():
-    game.deal_the_cards(players)
-    for i in range(4):
-        res1 = game.players[i].amount_point_pairs
-        res2 = game.players[i].trefl_points_random_forest_classifier
-        if res1 != res2:
-            print(game.players[i].print_cards())
-            game.players[i].cards.append(game.players[i].amount_point_pairs)
-            data.append(game.players[i].cards)
-            print(game.players[i].amount_point_pairs)
-            print(game.players[i].trefl_points_random_forest_classifier)
-                        
-def testing():
-    data = []
-    for i in range(10000):
-        bledy = len(data)
-        print('--'*3, 'wykonano', i, 'grę', '--'*3, 'błędy:', bledy, '--'*3)
-        rozegraj_gre()
-    write_result(data)
-
-
-
-
-def generator_danych(iters=100):
-    data_good = []
-    data_bad = []
-    for i in range(iters):
-        game.deal_the_cards(players)
-        for player in game.players:
-            if len(player.pairs) > 0:
-                array1 = np.append(player.array_cards, player.array_colors_cards)
-                data_good.append(array1)
-            else:
-                array1 = np.append(player.array_cards, player.array_colors_cards)
-                data_bad.append(array1)
-    print(len(data_good))
-    print(len(data_bad[::9]))
-    data = data_good + data_bad[::5]
-    random.shuffle(data)
-    file = open('test.csv', 'w+', newline ='') 
-    with file:     
-        write = csv.writer(file)
         file.write(title)
         write.writerows(data) 
-    return data
+        
 
+def check_error(game, iters=1000):
+    errors = 0
+    res_return = []
+    res_colors = []
+    bad_colors = []
+    for i in range(iters):
+        game.deal_the_cards(players)
+        game.step1()
+        cards = game.players[game.max_auction_id[0]].reshape_cards
+        colors = game.players[game.max_auction_id[0]].array_colors
+        colors_res = [0.,0.,0.,0.]
+        #print("typ cards:", type(cards), "typ colors:", type(colors), "typ colors_res:", type(colors_res))
+        for j in range(4):
+            if cards[j][2]+cards[j][3] == 2.0:
+                colors_res[j]= 1.0
+                for m in range(4):
+                    if colors_res[m]!=colors[m]:
+                        print(game.players[game.max_auction_id[0]].print_cards(), colors_res[m],colors[m] , colors_res, colors)
+                        errors += 1
+                        res_return.append(game.players[game.max_auction_id[0]].array_cards)
+                        res_colors.append(colors_res)
+                        bad_colors.append(colors)
+        print('błędy:', errors)
+        print("iteracja:", i)
+    return res_return, res_colors, bad_colors
+
+def scal_dane(res_return, res_colors):
+    res = []
+    res2 =[]
+    if len(res_return) > 0:
+        for i in range(len(res_return)):
+            res.append(list(res_return[i]))
+        for i in range(len(res)):
+            res3 = res[i]+res_colors[i]
+            res2.append(res3)
+        return res2
+    else:
+        return 0
+
+def percep():
+    df = pd.read_csv('data.csv')
+    color_column = ['trefl', 'pik', 'kier', 'karo']
+    index = title.split(',')
+    indexs = index[:-4]
+    X = df[indexs]
+    y = df[color_column]
+    X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2)
+    model = RandomForestClassifier()
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
+
+    iters = 0
+    for row in y_test.itertuples():
+        print(row.trefl, row.pik, row.kier, row.karo, y_pred[iters])
+        iters+=1
+        
+        
+      
+#res_return, res_colors, bad_colors = check_error(game)
+
+#res = scal_dane(res_return, res_colors)
 game.step1()
+print(game.players[game.max_auction_id[0]].print_cards() ,game.players[game.max_auction_id[0]].array_colors)
