@@ -15,11 +15,28 @@ names = ['Marek', 'Stefan', 'Janusz', 'Bogdan']
 players = [Player(name) for name in names]
 game = Game()
 
+
 @app.route('/',methods = ['POST', 'GET'])
 def start():
     game.deal_the_cards(players)
+    game.auction()
+    return render_template('start.html')
+
+@app.route('/musik',methods = ['POST', 'GET'])
+def take_musik():
     game.step1()
-    return render_template('start.html', game=game)
+    button = 1
+    return render_template('start.html', button=button)
+
+@app.route('/gra',methods = ['POST', 'GET'])
+def start_game():
+    game.step2()
+    button = 0
+    return render_template('start.html', button=button)
+
+@app.route('/first_move',methods = ['POST', 'GET'])
+def first_move():
+    return render_template('first_move.html')
     
 @app.route('/test',methods = ['POST', 'GET'])
 def data():

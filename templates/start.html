@@ -1,49 +1,23 @@
 {% extends 'base.html' %}
-
 {% block body %}
-	<h1><center>{{ app_name }}</center></h1>
-
-	<div id="container">
-		{% for player in game.players: %}
-			<div id="player">
-				<p>{{ player.name}}</p>
-				{% for card in player.cards: %}
-					<div id="card">
-						<img src="/static/image/{{card.name}}_{{card.color}}.jpg"> <br> {{card.id}}
-					</div>
-				{% endfor %}
-				<div id="clear"></div>
-				<div>
-					{{player.array_cards}}<br>
-					{{player.array_colors}}<br>
-					<p>Oczka: {{player.sum_points}}</p><br>
-					<p>Aukcja: {{player.auction}}</p>
-					<span>Pary:</span>
-					{% if player.array_colors[0] == 1 %}
-						<p>Trefl</p>
-					{% endif %}
-					{% if player.array_colors[1] == 1 %}
-						<p>Pik</p>
-					{% endif %}
-					{% if player.array_colors[2] == 1 %}
-						<p>Kier</p>
-					{% endif %}
-					{% if player.array_colors[3] == 1 %}
-						<p>Karo</p>
-					{% endif %}	
-				</div>
-			</div>
-		{% endfor %}
-		<div id="player">
-		<p>Musik</p>
-		{% for card in game.musik: %}
-			<div id="card">
-				<img src="/static/image/{{card.name}}_{{card.color}}.jpg"> <br> {{card.id}}
-			</div>
-		{% endfor %}
+	{% include 'base_cards.html' %}
+	{% if game.musik|length > 0 %}
+		<div class="button">
+			<a href="{{ url_for('take_musik') }}" class="button"> Daj musik </a>
 		</div>
-		<p>Licytacja: {{game.players[game.max_auction_id[0]]}}<br>{{game.players[game.max_auction_id[0]].auction}}</p>
-		<div id="clear"></div>
-	</div>
+	{% endif %}
+	{% if game.master_player %}
+		<div class="button">
+				<a href="{{ url_for('first_move') }}" class="button"> Zacznij grę </a>
+			</div>
+	{% else %}
+		{% if game.musik|length == 0 %}
+			<div class="button">
+				<a href="{{ url_for('start_game') }}" class="button"> Rozdaj musik </a>
+			</div>
+		{% endif %}
+	{% endif %}
 {% endblock %}
+
+
 

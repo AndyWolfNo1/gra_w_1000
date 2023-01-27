@@ -144,8 +144,61 @@ class Player:
             buff[i].append(self.array_colors[i])
             suma += sum(buff[i])*c
             c -= 0.20
-        self.auction = round(suma, 3)
-
+        self.auction = round(suma, 3)+sum(self.array_colors)
+        
+    def take_3_min_cards(self):
+        cards = self.cards
+        n_colors = ['trefl','pik','kier','karo']
+        colors = []
+        res = []
+        
+        for i in range(4):
+            if self.array_colors[i]==1:
+                colors.append(n_colors[i])
+        
+        while len(res)<3:
+            for i in range(len(cards)):
+                if cards[i].name =='9':
+                    res.append(cards[i].id)
+            for i in range(len(cards)):
+                if cards[i].name =='J' and cards[i].color not in colors and len(res)<3:
+                    res.append(cards[i].id)
+            for i in range(len(cards)):
+                if cards[i].name =='Q' and cards[i].color not in colors and len(res)<3:
+                    res.append(cards[i].id)
+            for i in range(len(cards)):
+                if cards[i].name =='K' and cards[i].color not in colors and len(res)<3:
+                    res.append(cards[i].id)
+            for i in range(len(cards)):
+                if cards[i].name =='10' and cards[i].color not in colors and len(res)<3:
+                    res.append(cards[i].id)
+            for i in range(len(cards)):
+                if cards[i].name =='A' and cards[i].color not in colors and len(res)<3:
+                    res.append(cards[i].id)
+        if len(res)<3:
+            res.pop()
+        return res
+    
+    def take_one_card(self, card):
+        self.cards.append(card)
+        self.sorted_cards()
+        self.create_cards_array()
+    
+    def return_cards_by_id(self, card_id:list):
+        i_d = len(card_id)
+        res = []
+        iters = 0
+                
+        while iters <= i_d:
+            for i in range(len(self.cards)):
+                if self.cards[i].id in card_id:
+                    res.append(self.cards[i])
+                    del self.cards[i]
+                    break
+            iters += 1
+        return res      
+            
+            
 class Game:
     _instance = None
     title ="A_trefl,10_trefl,K_trefl,D_trefl,J_trefl,9_trefl,A_pik,10_pik,K_pik,D_pik,J_pik,9_pik,A_kier,10_kier,K_kier,D_kier,J_kier,9_kier,A_karo,10_karo,K_karo,D_karo,J_karo,9_karo,trefl,pik,kier,karo\n"
@@ -173,6 +226,7 @@ class Game:
         return shuffled_cards
 
     def deal_the_cards(self, players):
+        self.master_player = None
         self.players_name = [self.players[i].name for i in range(len(self.players))]
         self.players_cards = [self.players[i].cards for i in range(len(self.players))]
         self.s_cards = self.suffle_cards()
@@ -191,7 +245,6 @@ class Game:
 
         self.players = players
         self.musik = []
-        # 5, 11, 17, 23
         self.musik.append(self.s_cards[5::6])
         self.musik = sorted(self.musik[0], key=lambda card: card.id, reverse=False)
         
@@ -229,6 +282,7 @@ class Game:
 
     def step1(self):
         self.auction()
+        self.master_player = None
         if len(self.max_auction_id)==1:
             self.players[self.max_auction_id[0]].take_card(self.musik, musik=True)
             self.players[self.max_auction_id[0]].sorted_cards()
@@ -244,7 +298,19 @@ class Game:
                 self.players[i].create_cards_array()
                 self.players[i].gen_auction()
             self.predict_players()
+        self.musik = []
 
-
+    def step2(self):
+        all_id = [0,1,2,3]
+        self.return_musik = self.players[self.max_auction_id[0]].take_3_min_cards()
+        self.return_musik2 = self.players[self.max_auction_id[0]].return_cards_by_id(self.return_musik)
+        win_player_id = self.max_auction_id[0]
+        del all_id[win_player_id]
+        for i, n in enumerate(all_id):
+            self.players[n].take_one_card(self.return_musik2[i])
+        self.master_player = self.players[self.max_auction_id[0]]
+        self.predict_players()
+        
+        
 class Statistics:
     pass

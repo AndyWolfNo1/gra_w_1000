@@ -1,0 +1,34 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<h1><center>{{ app_name }}</center></h1>
+<div id="container">
+{% for player in game.players: %}
+	<fieldset id="player">
+	<div id="show_colors">
+			{% if player.array_colors[0] == 1 %}
+				<img src="/static/image/trefl.jpg" width="23" height="23">
+			{% endif %}
+			{% if player.array_colors[1] == 1 %}
+				<img src="/static/image/pik.jpg" width="23" height="23">
+			{% endif %}
+			{% if player.array_colors[2] == 1 %}
+				<img src="/static/image/kier.jpg" width="23" height="23">
+			{% endif %}
+			{% if player.array_colors[3] == 1 %}
+				<img src="/static/image/karo.jpg" width="23" height="23">
+			{% endif %}
+			{% if game.master_player %}
+				{% if player.name == game.master_player.name %}
+					<img style="float:right;" src="/static/image/star.jpg" width="23" height="23">
+				{% endif %}
+			{% endif %}
+	</div>
+		<legend>{{ player.name}}</legend>
+		{% for card in player.cards: %}
+			<div id="card">
+				<img src="/static/image/{{card.name}}_{{card.color}}.jpg" width="82" height="126"> <br>
+			</div>
+		{% endfor %}
+		 {{player.auction}}
+		<div id="clear"></div>
+	</fieldset>
+{% endfor %}
