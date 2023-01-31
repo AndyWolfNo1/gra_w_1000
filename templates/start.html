@@ -1,22 +1,6 @@
 {% extends 'base.html' %}
 {% block body %}
 	{% include 'base_cards.html' %}
-	{% if game.musik|length > 0 %}
-		<div class="button">
-			<a href="{{ url_for('take_musik') }}" class="button"> Daj musik </a>
-		</div>
-	{% endif %}
-	{% if game.master_player %}
-		<div class="button">
-				<a href="{{ url_for('first_move') }}" class="button"> Zacznij grę </a>
-			</div>
-	{% else %}
-		{% if game.musik|length == 0 %}
-			<div class="button">
-				<a href="{{ url_for('start_game') }}" class="button"> Rozdaj musik </a>
-			</div>
-		{% endif %}
-	{% endif %}
 {% endblock %}
 
 

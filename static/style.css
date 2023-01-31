@@ -1,6 +1,7 @@
 body{
-	background-color: #b3b3b3;
-	color:blue;
+	/* background-color: #b3b3b3; */
+	background-color: #5c5470;
+	color:#dbd8e3;
 }
 
 img{
@@ -11,10 +12,12 @@ img{
 	padding:20px;
 	margin-left:auto;
 	margin-right:auto;
-	background:#DCDCDC; 
+	/* background:#DCDCDC;  */
+	background:#2a2438; 
 	/* height:100%;  */
 	height:800px;
 	width:95%;
+	border-radius: 8px;
 }
 
 #clear{
@@ -26,17 +29,21 @@ img{
 	margin-left: 5px;
 }
 
-#player{
+.player{
 	float: left;
 	padding:10px;
-	border: 1px dotted blue;
+	/* border: 1px dotted blue; */
 	margin:3px;
 	width:46%;
 	height:200px;
+	/* background-color: #cdcdcd; */
+	background-color: #352f44;
+	border-radius: 8px;
 }
 
 table{
-	border: 1px solid black;
+	/* border: 1px solid black; */
+	margin-bottom:10px;
 }
 
 tr{
@@ -55,48 +62,51 @@ tr{
 #musik{
 	float: left;
 	padding:5px;
-	border: 1px dotted blue;
+	/* border: 1px dotted blue; */
 	margin:3px;
 	width:30%;
 	height:220px;
 }
+
 .button {
-	background-color: #b3b3b3;
+	/* background-color: #b3b3b3; */
+	background:#dbd8e3;
 	border: none;
 	color: black;
 	padding: 2px 2px;
 	text-align: center;
 	text-decoration: none;
-	font-size: 13px;
+	font-size: 15px;
 	margin-top:10px;
 	margin-left:auto;
 	margin-right:auto;
 	cursor: pointer;
-	width:10%;
+	border-radius:4px;
 }
 
 .button:hover{
-	background-color: #8c8d8d;
+	/* background-color: #8c8d8d; */
+	background-color: #c4c1e0;
 	border: none;
 	color: black;
 	padding: 2px 2px;
 	text-align: center;
 	text-decoration: none;
-	font-size: 13px;
+	font-size: 15px;
 	margin-top:10px;
 	margin-left:auto;
 	margin-right:auto;
 	cursor: pointer;
-	width:10%;
+	border-radius:4px;
 }
 
 .table {
-	width:46%;
-	height:200px;
+	width:55%;
+	height:250px;
 	margin-left:auto;
 	margin-right:auto;
 	background-image: url("image/table.jpg");
-	margin-top:27%;
+	margin-top:13.5%;
 	border-radius: 10px;
 	padding:30px;
 }
@@ -106,4 +116,32 @@ tr{
 	height: 70%;
 	margin-left:auto;
 	margin-right:auto;
+}
+
+.statistic {
+	margin:30px;
+	width:50%;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.static table, td, th {
+	border: 1px solid;
+	padding:2px;
+}
+
+.statistic table {
+	width:46%;
+	margin-left:auto;
+	margin-right:auto;
+	text-align:center;
+	border-collapse: collapse;
+	float: right;
+	padding:10px;
+}
+
+#title {
+	float: left;
+	padding:10px;
+	width:35%;
 }

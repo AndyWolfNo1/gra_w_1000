@@ -15,10 +15,9 @@ talia_kart = Deck().take()
 game = Game()
 game.deal_the_cards(players)
 game.step1()
-
-win_player = game.players[game.max_auction_id[0]]
-
 game.step2()
 
-cards = win_player.cards
+wp = game.players[game.max_auction_id[0]]
+wp.print_cards()
 
+res = wp.create_colors()

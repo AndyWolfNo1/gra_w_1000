@@ -90,7 +90,8 @@ class Player:
         self.ID = int()
         self.colors = {'trefl': 100, 'pik' : 80, 'kier': 60, 'karo': 40}
         self.name = name
-
+        self.last_move = [None, None]
+        
     def __str__(self):
         return self.name
 
@@ -113,6 +114,19 @@ class Player:
 
     def create_colors_array(self, colors):
         self.array_colors = colors
+        
+    def create_colors(self):
+        res = []
+        if self.array_colors[0] > 0:
+            res.append('trefl')
+        if self.array_colors[1] > 0:
+            res.append('pik')
+        if self.array_colors[2] > 0:
+            res.append('kier')
+        if self.array_colors[3] > 0:
+            res.append('karo')
+        self.colors_name = res
+        return res
    
     def take_card(self, cards, musik = None):
         if musik == None:
@@ -197,7 +211,31 @@ class Player:
                     break
             iters += 1
         return res      
+    
+    def change_check_in(self, mode):
+        self.check_in = mode
+        
+    def move(self):
+        self.create_colors()
+        if self.last_move[0] == None:        
+            for i in range(len(self.cards)):
+                if self.cards[i].name == 'A':
+                    if self.cards[i].color in self.colors_name:
+                        res = self.return_cards_by_id([self.cards[i].id])
+                        self.last.move[0] = self.cards[i].name
+                        self.last_move[1] = self.cards[i].color
+                        break
+                    else:
+                        res = self.return_cards_by_id([self.cards[i].id])
+                        self.last.move[0] = self.cards[i].name
+                        break
+        if self.last_move[0] != None and self.last_move[1] == None:
+            if self.last_move[0] == 'A':
+                pass
+                
             
+        return res
+                    
             
 class Game:
     _instance = None
@@ -252,6 +290,7 @@ class Game:
             self.players[i].take_card(order_of_hands[i])
             self.players[i].ID = i
         self.predict_players()
+        self.check_in = 0
     
     def perceptron(self):
         index = self.title.split(',')
@@ -280,7 +319,13 @@ class Game:
         maximum = max([x for x in self.auction_res.values()])
         self.max_auction_id = [key for key, value in self.auction_res.items() if value == maximum]
 
+    def change_check_in(self, mode):
+        for i in range(len(self.players)):
+            self.players[i].change_check_in(mode)
+            self.check_in = mode
+
     def step1(self):
+        self.check_in = 0
         self.auction()
         self.master_player = None
         if len(self.max_auction_id)==1:
@@ -310,7 +355,19 @@ class Game:
             self.players[n].take_one_card(self.return_musik2[i])
         self.master_player = self.players[self.max_auction_id[0]]
         self.predict_players()
-        
-        
-class Statistics:
-    pass
+        for i in range(4):
+            self.players[i].gen_auction()
+
+    def step3(self):
+        #self.change_check_in([1,0,0,0])
+        pass
+
+
+
+
+
+
+
+
+
+

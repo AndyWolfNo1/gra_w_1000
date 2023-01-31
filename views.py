@@ -20,23 +20,30 @@ game = Game()
 def start():
     game.deal_the_cards(players)
     game.auction()
-    return render_template('start.html')
+    adress = '/musik'
+    n_a = 'Daj musik'
+    return render_template('start.html', adress=adress, n_a=n_a)
 
 @app.route('/musik',methods = ['POST', 'GET'])
 def take_musik():
     game.step1()
-    button = 1
-    return render_template('start.html', button=button)
+    adress = '/gra'
+    n_a = 'Rozdaj musik'
+    return render_template('start.html', adress=adress, n_a=n_a)
 
 @app.route('/gra',methods = ['POST', 'GET'])
 def start_game():
     game.step2()
-    button = 0
-    return render_template('start.html', button=button)
+    adress = '/first_move'
+    n_a = 'Zacznij grę'
+    return render_template('start.html', adress=adress, n_a=n_a)
 
 @app.route('/first_move',methods = ['POST', 'GET'])
 def first_move():
-    return render_template('first_move.html')
+    game.step3()
+    n_a = 'n_step'
+    adress = '/first_move'
+    return render_template('first_move.html', adress=adress, n_a=n_a)
     
 @app.route('/test',methods = ['POST', 'GET'])
 def data():
