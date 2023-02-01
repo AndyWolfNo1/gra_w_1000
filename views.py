@@ -15,35 +15,33 @@ names = ['Marek', 'Stefan', 'Janusz', 'Bogdan']
 players = [Player(name) for name in names]
 game = Game()
 
-
 @app.route('/',methods = ['POST', 'GET'])
 def start():
+    game.check_in = [0,0,0,0]
+    if request.method == 'POST':
+            form_data = request.form
+            if form_data['name'] == '/musik':
+                game.step1()
+                adress = '/gra'
+                n_a = 'Rozdaj musik'
+                return render_template('start.html', adress=adress, n_a=n_a)
+            if form_data['name'] == '/gra':
+                game.step2()
+                adress = '/first_move'
+                n_a = 'Zacznij grę'
+                return render_template('start.html', adress=adress, n_a=n_a)
+            if form_data['name'] == '/first_move':
+                game.step3()
+                n_a = 'n_step'
+                adress = '/first_move'
+                script = f"<script>my_f();</script>"
+                return render_template('start.html', adress=adress, n_a=n_a, script=script)
     game.deal_the_cards(players)
     game.auction()
+    game.test_cards = None
     adress = '/musik'
     n_a = 'Daj musik'
     return render_template('start.html', adress=adress, n_a=n_a)
-
-@app.route('/musik',methods = ['POST', 'GET'])
-def take_musik():
-    game.step1()
-    adress = '/gra'
-    n_a = 'Rozdaj musik'
-    return render_template('start.html', adress=adress, n_a=n_a)
-
-@app.route('/gra',methods = ['POST', 'GET'])
-def start_game():
-    game.step2()
-    adress = '/first_move'
-    n_a = 'Zacznij grę'
-    return render_template('start.html', adress=adress, n_a=n_a)
-
-@app.route('/first_move',methods = ['POST', 'GET'])
-def first_move():
-    game.step3()
-    n_a = 'n_step'
-    adress = '/first_move'
-    return render_template('first_move.html', adress=adress, n_a=n_a)
     
 @app.route('/test',methods = ['POST', 'GET'])
 def data():

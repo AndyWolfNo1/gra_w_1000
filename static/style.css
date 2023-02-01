@@ -34,7 +34,7 @@ img{
 	padding:10px;
 	/* border: 1px dotted blue; */
 	margin:3px;
-	width:46%;
+	width:48%;
 	height:200px;
 	/* background-color: #cdcdcd; */
 	background-color: #352f44;
@@ -100,22 +100,29 @@ tr{
 	border-radius:4px;
 }
 
-.table {
-	width:55%;
-	height:250px;
+.table { 
+	float:left;
+	width:52%;
+	height:310px;
 	margin-left:auto;
 	margin-right:auto;
+	margin-top:10px;
+	margin-bottom:10px;
 	background-image: url("image/table.jpg");
-	margin-top:13.5%;
 	border-radius: 10px;
-	padding:30px;
-}
+ }
 
 .table #cards {
-	width: 50%;
+	width: 70%;
 	height: 70%;
 	margin-left:auto;
 	margin-right:auto;
+	margin-top:30px;
+	padding:40px;
+}
+
+.table img {
+	margin:20px;
 }
 
 .statistic {
@@ -144,4 +151,44 @@ tr{
 	float: left;
 	padding:10px;
 	width:35%;
+}
+
+.play_cards {
+	width:290px;
+	height:280px;
+	margin:auto;
+	padding:20px;
+}
+
+.play_cards img {
+	float: left;
+	margin-left:35px;
+	margin-top:5px;
+	margin-bottom:5px;
+}
+
+#panel1 {
+	padding:20px;
+	margin-top:7px;
+	margin-left:11px;
+	margin-right:10px;
+	width: 20%;
+	height: 280px;
+	border: 1px solid;
+	float:left;
+	background-color: #352f44;
+	border-radius: 8px;
+}
+
+#panel2 {
+	padding:20px;
+	margin-top:7px;
+	margin-left:11px;
+	margin-right:10px;
+	width: 20%;
+	height: 280px;
+	border: 1px solid;
+	float:left;
+	background-color: #352f44;
+	border-radius: 8px;
 }

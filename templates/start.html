@@ -1,6 +1,21 @@
 {% extends 'base.html' %}
 {% block body %}
 	{% include 'base_cards.html' %}
+	{% if script %}
+		{{script|safe}}
+	{% endif %}
+		<div id="main_form">
+			<form action="/" method = "POST">
+				<input type = "text" name = "name" value="{{adress}}" style="display:none;"/>
+				<p><input type = "submit" value = "{{n_a}}" /></p>
+			</form>
+			<form action="/" method = "POST">
+				<input type = "text" name = "name" value="new" style="display:none;"/>
+				<p><input type = "submit" value = "Nowa gra" /></p>
+			</form>
+		</div>
+		
+		<script>check_player();</script>
 {% endblock %}
 
 

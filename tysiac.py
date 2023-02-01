@@ -90,7 +90,9 @@ class Player:
         self.ID = int()
         self.colors = {'trefl': 100, 'pik' : 80, 'kier': 60, 'karo': 40}
         self.name = name
-        self.last_move = [None, None]
+        self.master_color = None
+        self.remove_cards = []
+        self.master = [0,0,0,0]
         
     def __str__(self):
         return self.name
@@ -189,8 +191,10 @@ class Player:
             for i in range(len(cards)):
                 if cards[i].name =='A' and cards[i].color not in colors and len(res)<3:
                     res.append(cards[i].id)
-        if len(res)<3:
+        if len(res)>3:
             res.pop()
+        if len(res)<3:
+            res.append(cards[-1].id)
         return res
     
     def take_one_card(self, card):
@@ -211,31 +215,71 @@ class Player:
                     break
             iters += 1
         return res      
-    
-    def change_check_in(self, mode):
-        self.check_in = mode
         
-    def move(self):
-        self.create_colors()
-        if self.last_move[0] == None:        
-            for i in range(len(self.cards)):
-                if self.cards[i].name == 'A':
-                    if self.cards[i].color in self.colors_name:
-                        res = self.return_cards_by_id([self.cards[i].id])
-                        self.last.move[0] = self.cards[i].name
-                        self.last_move[1] = self.cards[i].color
-                        break
-                    else:
-                        res = self.return_cards_by_id([self.cards[i].id])
-                        self.last.move[0] = self.cards[i].name
-                        break
-        if self.last_move[0] != None and self.last_move[1] == None:
-            if self.last_move[0] == 'A':
-                pass
-                
-            
-        return res
-                    
+    def start_move(self):
+        colors = self.create_colors()
+        #colors = ['trefl','pik','kier','karo']
+        cards = self.cards
+        for i in range(len(cards)):
+            if cards[i].name=='A':
+                self.remove_cards.append(cards[i])
+                res = self.return_cards_by_id([cards[i].id])
+                return res[0]
+        for i in range(len(cards)):
+            if cards[i].color in colors and cards[i].name == '10':
+                for j in range(len(self.remove_cards)):
+                    if self.remove_cards[j].name == "A" and cards[i].color == self.remove_cards[j].color:
+                        res = self.return_cards_by_id([cards[i].id])
+                        return res[0]
+        for i in range(len(cards)):
+            if cards[i].color in colors and cards[i].name=='Q':
+                self.master_color = cards[i].color
+                if self.master_color == 'trefl':
+                    self.master = [1,0,0,0]
+                if self.master_color == 'pik':
+                    self.master = [0,1,0,0]
+                if self.master_color == 'kier':
+                    self.master = [0,0,1,0]
+                if self.master_color == 'karo':
+                    self.master = [0,0,0,1]
+                res = self.return_cards_by_id([cards[i].id])
+                return res[0]
+        for i in range(len(cards)):
+            if cards[i].color in colors and cards[i].name=='10' and self.master_color == cards[i].color :
+                res = self.return_cards_by_id([cards[i].id])
+                return res[0]
+        for i in range(len(cards)):
+            if cards[i].color in colors and cards[i].name=='K':
+                res = self.return_cards_by_id([cards[i].id])
+                return res[0]
+        for i in range(len(cards)):
+            if cards[i].color in colors and cards[i].name=='J':
+                res = self.return_cards_by_id([cards[i].id])
+                return res[0]
+        for i in range(len(cards)):
+            if cards[i].color in colors and cards[i].name=='9':
+                res = self.return_cards_by_id([cards[i].id])
+                return res[0]
+        for i in range(len(cards)):
+            if cards[i].name=='10':
+                res = self.return_cards_by_id([cards[i].id])
+                return res[0]
+        for i in range(len(cards)):
+            if cards[i].name=='K':
+                res = self.return_cards_by_id([cards[i].id])
+                return res[0]
+        for i in range(len(cards)):
+            if cards[i].name=='Q':
+                res = self.return_cards_by_id([cards[i].id])
+                return res[0]
+        for i in range(len(cards)):
+            if cards[i].name=='J':
+                res = self.return_cards_by_id([cards[i].id])
+                return res[0]
+        for i in range(len(cards)):
+            if cards[i].name=='9':
+                res = self.return_cards_by_id([cards[i].id])
+                return res[0]
             
 class Game:
     _instance = None
@@ -253,6 +297,7 @@ class Game:
     def __init__(self):
         self.players = []
         self.perceptron()
+        self.start_card = None
         
     def suffle_cards(self):
         self.new_cards = Deck().take()
@@ -264,6 +309,7 @@ class Game:
         return shuffled_cards
 
     def deal_the_cards(self, players):
+        self.start_card = False
         self.master_player = None
         self.players_name = [self.players[i].name for i in range(len(self.players))]
         self.players_cards = [self.players[i].cards for i in range(len(self.players))]
@@ -319,13 +365,7 @@ class Game:
         maximum = max([x for x in self.auction_res.values()])
         self.max_auction_id = [key for key, value in self.auction_res.items() if value == maximum]
 
-    def change_check_in(self, mode):
-        for i in range(len(self.players)):
-            self.players[i].change_check_in(mode)
-            self.check_in = mode
-
     def step1(self):
-        self.check_in = 0
         self.auction()
         self.master_player = None
         if len(self.max_auction_id)==1:
@@ -359,8 +399,9 @@ class Game:
             self.players[i].gen_auction()
 
     def step3(self):
-        #self.change_check_in([1,0,0,0])
-        pass
+        self.start_card = self.players[self.max_auction_id[0]].start_move()
+        self.check_in = self.players[self.max_auction_id[0]].master
+        
 
 
 

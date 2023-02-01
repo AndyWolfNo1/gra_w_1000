@@ -16,8 +16,18 @@ game = Game()
 game.deal_the_cards(players)
 game.step1()
 game.step2()
+game.step3()
+
+as1 = talia_kart[0]
+dycha = talia_kart[1]
+as2 = talia_kart[6]
+as3 = talia_kart[12]
+dama = talia_kart[3]
+dupek = talia_kart[16]
 
 wp = game.players[game.max_auction_id[0]]
-wp.print_cards()
+#wp.cards = [as1,dycha,as2,as3,dama,dupek]
 
-res = wp.create_colors()
+res = wp.start_move()
+
+

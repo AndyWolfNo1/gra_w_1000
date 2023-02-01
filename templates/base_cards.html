@@ -2,10 +2,6 @@
 <div id="title">
 	<h2><center>{{ app_name }}</center></h2>
 </div>
-<div style="float:left; margin-top:20px;">
-	<a href="{{ adress }}" class="button"> {{ n_a }} </a><br><br>
-	<a href="/" class="button"> Od nowa </a>
-</div>
 <div class="statistic">
 	<table>
 	  <tr>
@@ -22,23 +18,22 @@
 		<td>{{player.auction}}</td>
 		{% endfor %}
 		<td>{{ game.players[game.max_auction_id[0]].name }}</td>
+
 		<td>
-			{% if game.check_in %}
-				{% if game.check_in == 0 %}
-					brak
-				{% else %}
-					{% if game.check_in[0] == 1 %}
+			{% if game.check_in == 'none' %}
+		
+			{% else %}
+				{% if game.check_in[0] == 1 %}
 						<img src="/static/image/trefl.jpg" width="23" height="23">
-					{% endif %}
-					{% if game.check_in[1] == 1 %}
-						<img src="/static/image/pik.jpg" width="23" height="23">
-					{% endif %}
-					{% if game.check_in[2] == 1 %}
-						<img src="/static/image/kier.jpg" width="23" height="23">
-					{% endif %}
-					{% if game.check_in[2] == 1 %}
-						<img src="/static/image/karo.jpg" width="23" height="23">
-					{% endif %}
+				{% endif %}
+				{% if game.check_in[1] == 1 %}
+					<img src="/static/image/pik.jpg" width="23" height="23">
+				{% endif %}
+				{% if game.check_in[2] == 1 %}
+					<img src="/static/image/kier.jpg" width="23" height="23">
+				{% endif %}
+				{% if game.check_in[3] == 1 %}
+					<img src="/static/image/karo.jpg" width="23" height="23">
 				{% endif %}
 			{% endif %}
 		</td>
@@ -48,6 +43,7 @@
 		<td>0</td>
 		<td>0</td>
 		<td>0</td>
+		<td id="master_id">{{ game.players[game.max_auction_id[0]].ID +1 }}</td>
 	  <tr>
 	  </tr>
 	</table>
@@ -56,7 +52,7 @@
 <div id="cut">
 	<div id="container">
 		{% for player in game.players: %}
-			<fieldset class="player">
+			<fieldset class="player" id="id_{{player.ID}}">
 			<div id="show_colors">
 					{% if player.array_colors[0] == 1 %}
 						<img src="/static/image/trefl.jpg" width="23" height="23">
@@ -76,11 +72,11 @@
 						{% endif %}
 					{% endif %}
 			</div>
-				<legend>{{ player.name}}</legend>
-				<div style="margin-left:auto, margin-right:auto; display:flex; justify-content: center;">
+				<legend>{{ player.name}} # {{player.ID +1}}</legend>
+				<div id="hand{{player.ID}}" style="margin-left:auto, margin-right:auto; display:flex; justify-content: center;">
 					{% for card in player.cards: %}
 						<div id="card">
-							<img src="/static/image/{{card.name}}_{{card.color}}.jpg" width="82" height="126"> <br>
+							<img src="/static/image/{{card.name}}_{{card.color}}.jpg" width="82" height="126" id="{{card.id}}" onclick = "tap_card({{card.id}})"> <br>
 						</div>
 					{% endfor %}
 					 <!-- {{player.auction}} -->
@@ -97,13 +93,14 @@
 						{% endfor %}
 					</div>
 						<div id="clear"></div>
-		<!-- 				<div>
-							<span>Licytację wygrywa: {{game.players[game.max_auction_id[0]]}}, współczynnik: {{game.players[game.max_auction_id[0]].auction}}</span><br>
-							<a href="{{ url_for('take_musik') }}" class="button"> Daj musik </a>
-						</div> -->
+				{% endif %}
+				{% if game.start_card %}
+
+								<img src="/static/image/{{game.start_card.name}}_{{game.start_card.color}}.jpg" width="82" height="126">
 
 				{% endif %}
-	</div>
+				
+		</div>
 </div>
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 
