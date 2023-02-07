@@ -9,6 +9,9 @@ $('#container').append("<div id='panel2'></div>");
 $('#container').append("<div style='clear:both;'></div>");
 $('#container').append(children[2]);
 $('#container').append(children[3]);
+var statistic = $('.statistic').children();
+$('.statistic').remove();
+$('#panel2').append(statistic);
 
 function my_f(){
 		var cards = $(".table").children();
@@ -37,10 +40,11 @@ function check_player() {
 	var id = $('#master_id').html();
 	var path = '#id_'+(id-1);
 	$(path).css('border-color','#c40000');
+	$(path).css('box-shadow', '0 0 10px red');
 }
 
 setTimeout(() => {
 		var main_form = $('#main_form').children();
-        $('#main_form').empty();
+		$('#main_form').empty();
 		$('#panel1').append(main_form);
-    }, 300);
+    }, 100);

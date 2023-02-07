@@ -4,18 +4,44 @@
 	{% if script %}
 		{{script|safe}}
 	{% endif %}
-		<div id="main_form">
+	<div id="main_form">
+		{% if (n_a != 'Licytacja')%}
 			<form action="/" method = "POST">
 				<input type = "text" name = "name" value="{{adress}}" style="display:none;"/>
 				<p><input type = "submit" value = "{{n_a}}" /></p>
 			</form>
-			<form action="/" method = "POST">
-				<input type = "text" name = "name" value="new" style="display:none;"/>
-				<p><input type = "submit" value = "Nowa gra" /></p>
-			</form>
-		</div>
-		
-		<script>check_player();</script>
+		{% endif %}
+		{% if n_a %}
+			{% if (n_a == 'Licytacja') %}
+				<form action="/licit" method = "POST">
+				  <label for="licit">Licytuj ile ugrasz:</label>
+				  <input list="licits"  name="licit">
+					<datalist id="licits">
+						<option value="100">
+						<option value="110">
+						<option value="120">
+						<option value="130">
+						<option value="140">
+						<option value="150">
+						<option value="160">
+						<option value="170">
+						<option value="180">
+						<option value="190">
+						<option value="200">
+						<option value="210">
+						<option value="220">
+						<option value="230">
+					</datalist>
+				  <input type="submit">
+				</form>
+			{% endif %}
+		{% endif %}
+		<form action="/" method = "POST">
+			<input type = "text" name = "name" value="new" style="display:none;"/>
+			<p><input type = "submit" value = "Nowa gra" /></p>
+		</form>
+	</div>
+	<script>check_player();</script>
 {% endblock %}
 
 

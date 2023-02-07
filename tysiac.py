@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
 
 
 class Card:
@@ -281,6 +280,49 @@ class Player:
                 res = self.return_cards_by_id([cards[i].id])
                 return res[0]
             
+    def play(self, data):
+        start_card = data[0]
+        check_in = data[1]
+        for i, j in enumerate(self.colors):
+            if check_in[i] == 1:
+                check_in = j
+                break
+            if i == 3 and isinstance(check_in, list):
+                check_in = 0
+        if check_in != 0 and isinstance(check_in, str):
+            try:
+                cards_from_color = list(filter(lambda x: x.color == check_in, self.cards))
+                highest_card = max(cards_from_color, key=lambda x: x.value)
+                if highest_card:
+                    return highest_card
+            except:
+                try:
+                    cards_from_color = list(filter(lambda x: x.color == check_in, self.cards))
+                    lowest_card = min(cards_from_color, key=lambda x: x.value)
+                    if lowest_card:
+                        return lowestt_card
+                except:
+                    try:
+                        lowest_card = min(self.cards, key=lambda x: x.value)
+                        return lowest_card
+                    except:
+                        pass
+        if check_in == 0:
+            try:
+                cards_from_color = list(filter(lambda x: x.color == start_card.color, self.cards))
+                lowest_card = min(cards_from_color, key=lambda x: x.value)
+                if lowest_card:
+                    return lowest_card
+            except:
+                pass
+        if check_in == 0 :
+            try:
+                lowest_card = min(self.cards, key=lambda x: x.value)
+                return lowest_card
+            except:
+                pass
+            
+            
 class Game:
     _instance = None
     title ="A_trefl,10_trefl,K_trefl,D_trefl,J_trefl,9_trefl,A_pik,10_pik,K_pik,D_pik,J_pik,9_pik,A_kier,10_kier,K_kier,D_kier,J_kier,9_kier,A_karo,10_karo,K_karo,D_karo,J_karo,9_karo,trefl,pik,kier,karo\n"
@@ -298,6 +340,7 @@ class Game:
         self.players = []
         self.perceptron()
         self.start_card = None
+        self.licit_val = 0
         
     def suffle_cards(self):
         self.new_cards = Deck().take()
@@ -365,7 +408,39 @@ class Game:
         maximum = max([x for x in self.auction_res.values()])
         self.max_auction_id = [key for key, value in self.auction_res.items() if value == maximum]
 
+    def o_o_p(self, start_id):
+        '''Order of players '''
+        if start_id == 0:
+            return [1,2,3]
+        if start_id == 1:
+            return [2,3,0]
+        if start_id == 2:
+            return [3,0,1]
+        if start_id == 3:
+            return[0,1,2]
+        
+    def move(self, start_id):
+        start_card = self.players[start_id].start_move()
+        self.check_in = self.players[self.max_auction_id[0]].master
+        data = [self.start_card, self.check_in]
+        o_o_p = self.o_o_p(self.max_auction_id[0])
+        self.play_cards = [None,None,None,None]
+        for i in range(4):
+            if self.max_auction_id[0] == i:
+                self.play_cards[i] = start_card
+        
+        for i in o_o_p:
+            card = self.players[i].play([start_card, self.check_in])
+            try:
+                self.players[i].return_cards_by_id([card.id])
+            except:
+                pass
+            self.play_cards[i] = card
+        self.moves += 1
+
     def step1(self):
+        self.moves = 0
+        self.play_cards = []
         self.auction()
         self.master_player = None
         if len(self.max_auction_id)==1:
@@ -399,16 +474,5 @@ class Game:
             self.players[i].gen_auction()
 
     def step3(self):
-        self.start_card = self.players[self.max_auction_id[0]].start_move()
-        self.check_in = self.players[self.max_auction_id[0]].master
+        self.move(self.max_auction_id[0])
         
-
-
-
-
-
-
-
-
-
-

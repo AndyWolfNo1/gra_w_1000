@@ -26,8 +26,9 @@ dama = talia_kart[3]
 dupek = talia_kart[16]
 
 wp = game.players[game.max_auction_id[0]]
-#wp.cards = [as1,dycha,as2,as3,dama,dupek]
 
-res = wp.start_move()
+wp.cards = [talia_kart[5], talia_kart[1], talia_kart[2], talia_kart[3], talia_kart[4]]
+data = [talia_kart[0],[0,0,0,0]]
 
+res = wp.play(data)
 
