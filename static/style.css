@@ -1,7 +1,7 @@
 body{
-	/* background-color: #b3b3b3; */
 	background-color: #5c5470;
 	color:#dbd8e3;
+	font-weight: bold;
 }
 
 img{
@@ -12,13 +12,12 @@ img{
 	padding:20px;
 	margin-left:auto;
 	margin-right:auto;
-	/* background:#DCDCDC;  */
-	background:#2a2438; 
-	/* height:100%;  */
+	background:#2a2438;
 	height:800px;
 	width:95%;
 	border-radius: 8px;
 	box-shadow:0 0 10px #dbd8e3;
+	position: relative;
 }
 
 #clear{
@@ -28,23 +27,22 @@ img{
 #card{
 	float: left;
 	margin-left: 5px;
+	position:relative;
+	z-index:1;
 }
 
 .player{
 	float: left;
 	padding:10px;
-	/* border: 1px dotted blue; */
 	margin-left:5px;
 	margin-bottom:9px;
 	width:48%;
 	height:200px;
-	/* background-color: #cdcdcd; */
 	background-color: #352f44;
 	border-radius: 8px;
 }
 
 table{
-	/* border: 1px solid black; */
 	margin-bottom:10px;
 	text-align:center;
 	padding:5px;
@@ -65,14 +63,12 @@ table{
 #musik{
 	float: left;
 	padding:5px;
-	/* border: 1px dotted blue; */
 	margin:3px;
 	width:30%;
 	height:220px;
 }
 
 .button {
-	/* background-color: #b3b3b3; */
 	background:#dbd8e3;
 	border: none;
 	color: black;
@@ -88,7 +84,6 @@ table{
 }
 
 .button:hover{
-	/* background-color: #8c8d8d; */
 	background-color: #c4c1e0;
 	border: none;
 	color: black;
@@ -136,8 +131,12 @@ table{
 }
 
 .static table, td, th {
-	border: 1px solid;
+	font-weight: bold;
+	border: 1px solid red;
+	color: white;
 	padding:2px;
+	position: relative;
+	z-index: 1;
 }
 
 .statistic table {
@@ -180,8 +179,9 @@ table{
 	height: 280px;
 	border: 1px solid;
 	float:left;
-	background-color: #352f44;
+	background-color: #352f44; 
 	border-radius: 8px;
+	position: relative;
 }
 
 #panel2 {
@@ -195,4 +195,64 @@ table{
 	float:left;
 	background-color: #352f44;
 	border-radius: 8px;
+	position: relative;
+}
+
+#panel1::after {
+	content: "";
+	inset: 0;
+	position: absolute;
+	top: 0; 
+	left: 0;
+	width: 100%; 
+	height: 100%; 
+	background-image: url("/static/image/start_panel/dama.png");
+	background-size: 240px;
+	background-repeat: no-repeat;
+	background-position: center;
+	opacity: .2;
+	transform: rotate(-2deg);  
+}
+
+#panel2::after {
+	content: "";
+	inset: 0;
+	position: absolute;
+	top: 0; 
+	left: 0;
+	width: 100%; 
+	height: 100%; 
+	background-image: url("/static/image/start_panel/as_dym.png");
+	background-size: 240px;
+	background-repeat: no-repeat;
+	background-position: center;
+	opacity: .2;  
+	transform: rotate(-7deg);
+}
+
+#terminal {
+	width: 280px;
+	height: 150px;
+	background-color: black;
+	color: white;
+	font-family: monospace;
+	padding: 10px;
+	position:relative;
+	z-index:1;
+}
+
+#chatbox {
+  width: 95%;
+  height: 85%;
+  border: 1px solid black;
+  overflow: scroll;
+  padding: 10px;
+  color:red;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom:5px;
+}
+
+.chatmessage {
+  margin-bottom: 10px;
 }

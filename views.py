@@ -16,11 +16,13 @@ app_name = "Gra w 1000"
 names = ['Marek', 'Stefan', 'Janusz', 'Bogdan']
 players = [Player(name) for name in names]
 game = Game()
-game.licit_val = 0
 
 @app.route('/',methods = ['POST', 'GET'])
+def start_panel():
+    return render_template('start_panel.html')
+
+@app.route('/game',methods = ['POST', 'GET'])
 def start():
-    game.check_in = [0,0,0,0]
     if request.method == 'POST':
         form_data = request.form
         if form_data['name'] == '/musik':
@@ -30,22 +32,33 @@ def start():
             return render_template('start.html', adress=adress, n_a=n_a)
         if form_data['name'] == '/gra':
             game.step2()
-            adress = '/first_move'
-            n_a = 'Licytacja'
-            return render_template('start.html', adress=adress, n_a=n_a)
+            if game.error == True:
+                return render_template('error.html')
+            if game.error == False:
+                adress = '/first_move'
+                n_a = 'Licytacja'
+                return render_template('start.html', adress=adress, n_a=n_a)
         if form_data['name'] == '/first_move':
+            game.game_raport()
+            if game.moves == 7:
+                game.moves = 0
             game.step3()
-            n_a = 'n_step'
+            if game.moves < 6:
+                n_a = 'Graj'
+            if game.moves == 6:
+                n_a = "Dalej"
             adress = '/first_move'
             script = f"<script>my_f();</script>"
             return render_template('start.html', adress=adress, n_a=n_a, script=script)
+    game.moves = 0
     game.licit_val = 0
     game.deal_the_cards(players)
     game.auction()
     game.test_cards = None
     adress = '/musik'
     n_a = 'Daj musik'
-    return render_template('start.html', adress=adress, n_a=n_a)
+    information = "Licytację wygrywa gracz {}, zabierz musik i rozpocznij grę.".format(game.players[game.max_auction_id[0]])
+    return render_template('start.html', adress=adress, n_a=n_a, info=information)
 
 @app.route('/licit',methods = ['POST', 'GET'])
 def licit():
@@ -53,7 +66,11 @@ def licit():
     n_a = 'Zacznij grę'
     if request.method == 'POST':
             f_d = request.form
-            game.licit_val = f_d['licit']
+            licit = f_d['licit']
+            if licit != '':
+                game.licit_val = int(licit)
+            else:
+                game.licit_val = 100
             return render_template('start.html', adress=adress, n_a=n_a)
     
 @app.route('/test',methods = ['POST', 'GET'])

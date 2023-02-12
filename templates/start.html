@@ -4,20 +4,21 @@
 	{% if script %}
 		{{script|safe}}
 	{% endif %}
+	<div id="g_r" style="display:block">{{game.g_r}}</div>
 	<div id="main_form">
 		{% if (n_a != 'Licytacja')%}
-			<form action="/" method = "POST">
+			<form action="/game" method = "POST" style="position:relative; z-index:1;">
 				<input type = "text" name = "name" value="{{adress}}" style="display:none;"/>
-				<p><input type = "submit" value = "{{n_a}}" /></p>
+				<p><input id="play_form" type = "submit" value = "{{n_a}}" /></p>
 			</form>
 		{% endif %}
 		{% if n_a %}
 			{% if (n_a == 'Licytacja') %}
-				<form action="/licit" method = "POST">
+				<form action="/licit" method = "POST" style="position:relative; z-index:1">
 				  <label for="licit">Licytuj ile ugrasz:</label>
 				  <input list="licits"  name="licit">
 					<datalist id="licits">
-						<option value="100">
+						<option value="100" checked>
 						<option value="110">
 						<option value="120">
 						<option value="130">
@@ -32,16 +33,22 @@
 						<option value="220">
 						<option value="230">
 					</datalist>
-				  <input type="submit">
+				  <input type="submit" value="Wyślij licytację">
 				</form>
 			{% endif %}
 		{% endif %}
-		<form action="/" method = "POST">
+		<form id="new_game" action="/game" method = "POST" style="position:relative; z-index:1; display:none;">
 			<input type = "text" name = "name" value="new" style="display:none;"/>
 			<p><input type = "submit" value = "Nowa gra" /></p>
 		</form>
 	</div>
-	<script>check_player();</script>
+	<script>check_player(); infoPanel();</script>
+	{% if game.moves == 6 %}
+
+	<script>
+	cleanTable({{ game.moves }});
+	</script>;
+	{% endif %}
 {% endblock %}
 
 

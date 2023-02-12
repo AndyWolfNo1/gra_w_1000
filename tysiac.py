@@ -91,7 +91,8 @@ class Player:
         self.name = name
         self.master_color = None
         self.remove_cards = []
-        self.master = [0,0,0,0]
+        self.win_points = 0
+        self.match_points = 0
         
     def __str__(self):
         return self.name
@@ -113,8 +114,12 @@ class Player:
         for card in self.cards:
             self.array_cards[card.id-1]=1
 
-    def create_colors_array(self, colors):
-        self.array_colors = colors
+    def create_array_colors(self):
+        self.array_colors = np.zeros(4)
+        reshape_cards = self.array_cards.reshape(4,6)
+        for i in range(4):
+            if reshape_cards[i][2] == 1 and reshape_cards[i][3] == 1:
+                self.array_colors[i] = 1
         
     def create_colors(self):
         res = []
@@ -216,6 +221,7 @@ class Player:
         return res      
         
     def start_move(self):
+        self.master = [0,0,0,0]
         colors = self.create_colors()
         #colors = ['trefl','pik','kier','karo']
         cards = self.cards
@@ -234,12 +240,16 @@ class Player:
             if cards[i].color in colors and cards[i].name=='Q':
                 self.master_color = cards[i].color
                 if self.master_color == 'trefl':
+                    self.match_points += 100
                     self.master = [1,0,0,0]
                 if self.master_color == 'pik':
+                    self.match_points += 80
                     self.master = [0,1,0,0]
                 if self.master_color == 'kier':
+                    self.match_points += 60
                     self.master = [0,0,1,0]
                 if self.master_color == 'karo':
+                    self.match_points += 40
                     self.master = [0,0,0,1]
                 res = self.return_cards_by_id([cards[i].id])
                 return res[0]
@@ -300,7 +310,7 @@ class Player:
                     cards_from_color = list(filter(lambda x: x.color == check_in, self.cards))
                     lowest_card = min(cards_from_color, key=lambda x: x.value)
                     if lowest_card:
-                        return lowestt_card
+                        return lowest_card
                 except:
                     try:
                         lowest_card = min(self.cards, key=lambda x: x.value)
@@ -321,7 +331,13 @@ class Player:
                 return lowest_card
             except:
                 pass
-            
+
+    def add_match_points(self, points):
+        self.match_points += points
+    
+    def add_win_points(self, points):
+        self.win_points += points
+        
             
 class Game:
     _instance = None
@@ -337,10 +353,13 @@ class Game:
         return cls._instance
     
     def __init__(self):
+        self.moves = 0
         self.players = []
-        self.perceptron()
         self.start_card = None
         self.licit_val = 0
+        self.licit_val = 100
+        self.statistics = Statistics()
+        self.g_r = "brak"
         
     def suffle_cards(self):
         self.new_cards = Deck().take()
@@ -378,35 +397,17 @@ class Game:
         for i in range(4):
             self.players[i].take_card(order_of_hands[i])
             self.players[i].ID = i
-        self.predict_players()
-        self.check_in = 0
-    
-    def perceptron(self):
-        index = self.title.split(',')
-        self.indexs = index[:-4]
-        df = pd.read_csv('data.csv')
-        color_column = ['trefl', 'pik', 'kier', 'karo']
-        X = df[self.indexs]
-        y = df[color_column]
-        X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2)
-        self.model = RandomForestClassifier()
-        self.model.fit(X_train, y_train)
-
-    def predict_players(self):
-        for i in range(len(self.players)):
-            pc = self.players[i].array_cards
-            pc = pc.reshape(1,24)
-            pc = pd.DataFrame(pc, columns=self.indexs)
-            y_pred = self.model.predict(pc)
-            self.players[i].create_colors_array(y_pred[0])
+            self.players[i].create_array_colors()
             self.players[i].gen_auction()
-            
+        #self.check_in = 0
+        
     def auction(self):
         self.auction_res = dict()
         for i in range(4):
             self.auction_res[self.players[i].ID] = self.players[i].auction
         maximum = max([x for x in self.auction_res.values()])
         self.max_auction_id = [key for key, value in self.auction_res.items() if value == maximum]
+        self.check_in = [0,0,0,0]
 
     def o_o_p(self, start_id):
         '''Order of players '''
@@ -419,10 +420,22 @@ class Game:
         if start_id == 3:
             return[0,1,2]
         
+    def game_raport(self):
+        licit =self.licit_val
+        match_points = self.master_player.match_points
+        if licit <= match_points:
+            result = 'udało się ugrać' 
+        else:
+            result = 'nie udało się ugrać'
+        self.g_r = '''Grę wylicytował {}. Licytacja {}.
+        Gracz ugrał {}.
+        Graczowi {}
+        '''.format(self.master_player, self.licit_val, self.master_player.match_points, result)
+        
     def move(self, start_id):
         start_card = self.players[start_id].start_move()
-        self.check_in = self.players[self.max_auction_id[0]].master
-        data = [self.start_card, self.check_in]
+        if sum(self.players[self.max_auction_id[0]].master)>0:
+            self.check_in = self.players[self.max_auction_id[0]].master
         o_o_p = self.o_o_p(self.max_auction_id[0])
         self.play_cards = [None,None,None,None]
         for i in range(4):
@@ -439,6 +452,7 @@ class Game:
         self.moves += 1
 
     def step1(self):
+        self.error = False
         self.moves = 0
         self.play_cards = []
         self.auction()
@@ -449,7 +463,8 @@ class Game:
             for i in range(4):
                 self.players[i].create_cards_array()
                 self.players[i].gen_auction()
-            self.predict_players()
+                self.players[i].match_points = 0
+                self.players[i].create_array_colors()
         else:
             #do poprawy
             self.players[self.max_auction_id[0]].take_card(self.musik, musik=True)
@@ -457,22 +472,112 @@ class Game:
             for i in range(4):
                 self.players[i].create_cards_array()
                 self.players[i].gen_auction()
-            self.predict_players()
+                self.players[i].create_array_colors()
         self.musik = []
 
     def step2(self):
-        all_id = [0,1,2,3]
-        self.return_musik = self.players[self.max_auction_id[0]].take_3_min_cards()
-        self.return_musik2 = self.players[self.max_auction_id[0]].return_cards_by_id(self.return_musik)
-        win_player_id = self.max_auction_id[0]
-        del all_id[win_player_id]
-        for i, n in enumerate(all_id):
-            self.players[n].take_one_card(self.return_musik2[i])
-        self.master_player = self.players[self.max_auction_id[0]]
-        self.predict_players()
-        for i in range(4):
-            self.players[i].gen_auction()
+        try:
+            all_id = [0,1,2,3]
+            self.return_musik = self.players[self.max_auction_id[0]].take_3_min_cards()
+            self.return_musik2 = self.players[self.max_auction_id[0]].return_cards_by_id(self.return_musik)
+            win_player_id = self.max_auction_id[0]
+            del all_id[win_player_id]
+            for i, n in enumerate(all_id):
+                self.players[n].take_one_card(self.return_musik2[i])
+            self.master_player = self.players[self.max_auction_id[0]]
+            for i in range(4):
+                self.players[i].gen_auction()
+                self.players[i].create_array_colors()
+        except:
+            self.error = True
 
     def step3(self):
-        self.move(self.max_auction_id[0])
+        try:
+            self.move(self.max_auction_id[0])
+            if self.check_in[0] == 1:
+                color = 'trefl'
+            if self.check_in[1] == 1:
+                color = 'pik'
+            if self.check_in[2] == 1:
+                color = 'kier'
+            if self.check_in[3] == 1:
+                color = 'karo'
+            if sum(self.check_in)==0:
+                color = None
+            self.gameplay_result = [self.play_cards, self.max_auction_id[0], color]
+            self.statistics.add_game(self)
+            self.statistics.check_the_gameplay()
+        except:
+            self.error = True
         
+
+class Statistics:
+    def __init__(self):
+        pass
+     
+    def add_game(self, game):
+        self.game = game
+    
+    def check_the_gameplay(self):
+        if self.game:
+            if self.game.moves < 7:
+                gameplay_result = self.game.gameplay_result
+                max_card = gameplay_result[0][gameplay_result[1]]
+                max_id = gameplay_result[1]
+                res = 0
+                if gameplay_result[2] != None:
+                    if max_card.color == gameplay_result[2]:
+                        for i, j in enumerate(gameplay_result[0]):
+                            if j.color ==  gameplay_result[2] and j.value > max_card.value:
+                                max_card = j
+                                max_id = i
+                    if max_card.color != gameplay_result[2]:
+                        for i, j in enumerate(gameplay_result[0]):
+                            value = 0
+                            if j.color == gameplay_result[2] and j.value > value:
+                                max_card = j
+                                max_id = i
+                                value += j.value
+                                res = 1
+                        if res == 0:
+                            for i, j in enumerate(gameplay_result[0]):
+                                if j.value > max_card.value:
+                                    max_card = j
+                                    max_id = i  
+                else:
+                    for i, j in enumerate(gameplay_result[0]):
+                        if j.value > max_card.value:
+                            max_card = j
+                            max_id = i
+                            print("else")
+                points = sum(card.value for card in gameplay_result[0]) 
+                self.game.players[max_id].add_match_points(points)
+                self.game.max_auction_id[0] = max_id
+                if self.game.moves == 6:
+                    self.add_points()
+                return max_card, max_id
+
+    def add_points(self):
+        master_player = self.game.master_player
+        licit = self.game.licit_val
+        if licit > master_player.match_points:
+            res = -(licit)
+            self.game.master_player.add_win_points(res)
+        if licit < master_player.match_points:
+            res = round(master_player.match_points, -1)
+            self.game.master_player.add_win_points(res)   
+            
+        
+                
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

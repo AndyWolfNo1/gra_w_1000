@@ -1,10 +1,10 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <div id="title">
 	<h3><center>{{ app_name }}</center></h3>
+	<span id="master_id" style="display:none">{{ game.players[game.max_auction_id[0]].ID +1 }}</spand>
 </div>
 <div class="statistic">
 	<table>
-	  <caption>Statystyki</caption>
 	  <tr>
 		<th>&nbsp;</th	>
 		{% for player in game.players: %}
@@ -19,34 +19,30 @@
 	  </tr>
 	  <tr>
 		<td>Punkty</td>
-		<td>0</td>
-		<td>0</td>
-		<td>0</td>
-		<td>0</td>
+		{% for player in game.players: %}
+		<td>{{ player.match_points }}</td>
+		{% endfor %}
 	   </tr>
 	   <tr>
 		<td>Punktacja ogólna</td>
-		<td>0</td>
-		<td>0</td>
-		<td>0</td>
-		<td>0</td>
+		{% for player in game.players: %}
+		<td>{{ player.win_points }}</td>
+		{% endfor %}
 	   </tr>
 	</table>
 	<table>
-		<caption>Rozgrywka</caption>
+		<caption>Rozgrywka {% if game.moves and game.moves > 0 %} nr: {{ game.moves }} {% endif %}</caption>
 		<tr>
 			<th>Rozgrywający</th>
 			<th>Meldunek</th>
-			<th>Id gracza</th>
+			<th>Ugrano</th>
 			<th>Licytacja gracza</th>
 		</tr>
 		<tr>
-			<td>{{ game.players[game.max_auction_id[0]].name }}</td>
+			<td>{% if game.master_player and game.master_player != None %} {{ game.master_player }} {% endif %}</td>
 
 			<td>
-				{% if game.check_in == 'none' %}
-			
-				{% else %}
+				{% if game.check_in %}
 					{% if game.check_in[0] == 1 %}
 							<img src="/static/image/trefl.jpg" width="23" height="23">
 					{% endif %}
@@ -61,9 +57,8 @@
 					{% endif %}
 				{% endif %}
 			</td>
-			<td id="master_id">{{ game.players[game.max_auction_id[0]].ID +1 }}</td>
+			<td>{{ game.master_player.match_points }}</td>
 			<td>
-				
 				{{ game.licit_val }}
 			</td>
 		</tr>
@@ -100,7 +95,7 @@
 				</div>
 			</fieldset>
 		{% endfor %}
-		<div class="table">
+		<div class="table" id="tb">
 				{% if game.musik|length > 0 %}
 					<div id="cards">
 						{% for card in game.musik: %}

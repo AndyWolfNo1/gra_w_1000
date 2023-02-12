@@ -16,7 +16,7 @@ game = Game()
 game.deal_the_cards(players)
 game.step1()
 game.step2()
-game.step3()
+res = game.step3()
 
 as1 = talia_kart[0]
 dycha = talia_kart[1]
@@ -27,8 +27,17 @@ dupek = talia_kart[16]
 
 wp = game.players[game.max_auction_id[0]]
 
-wp.cards = [talia_kart[5], talia_kart[1], talia_kart[2], talia_kart[3], talia_kart[4]]
-data = [talia_kart[0],[0,0,0,0]]
 
-res = wp.play(data)
 
+def my_f():
+    if len(game.players[0].cards) > 0:
+        print('Ruch: ', game.moves)
+        res = game.gameplay_result
+        max_card, max_id = game.statistics.check_the_gameplay()
+        print('rezultat gry; ', res)
+        print('max_card, max_id: ', max_card.name,max_card.color, max_id)
+        print('Karty:')
+        for i in res[0]:
+            print(i.name, i.color)
+    else:
+        print('brak kart')

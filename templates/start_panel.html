@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block body %}
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="{{ url_for('static', filename='start_panel.js') }}"></script>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+	<style>
+		#play_button {
+		  animation: color-change 5s ease-in-out infinite;
+		  text-shadow: 0 0 10px black, 0 0 20px black, 0 0 30px black, 0 0 40px #3D1A3F, 0 0 70px #3D1A3F, 0 0 80px #3D1A3F, 0 0 100px #F5ACF9, 0 0 150px #F5ACF9;
+		}
+		
+		.greeting {
+		  margin: 50px 0;
+		  animation: color-change 5s ease-in-out infinite;
+		}
+
+		.greeting h1 {
+		  z-index: 1;
+		  font-family: 'Anton', sans-serif;
+		  text-align: center;
+		  font-size: 60px;
+		  animation: neon 5s ease-in-out infinite alternate;
+		}
+		
+		@keyframes neon {
+		  from {
+			text-shadow: 0 0 10px black, 0 0 20px black, 0 0 30px black, 0 0 40px #3D1A3F, 0 0 70px #3D1A3F, 0 0 80px #3D1A3F, 0 0 100px #F5ACF9, 0 0 150px #F5ACF9;
+		  }
+		  to {
+			text-shadow: 0 0 5px black, 0 0 10px black, 0 0 15px black, 0 0 20px #3D1A3F, 0 0 35px #3D1A3F, 0 0 40px #3D1A3F, 0 0 50px #F5ACF9, 0 0 75px #F5ACF9;
+		  }
+		}
+		
+		@keyframes color-change {
+		  0% {
+			color: #BA000C;
+		  }
+		  20% {
+			color: #FF212F;
+		  }
+		  40% {
+			color: #eb1522;
+		  }
+		  60% {
+			color: #FF212F;
+		  }
+		  80% {
+			color: #ED000F;
+		  }
+		  100% {
+			color: #BA000C;
+		  }
+		}
+	</style>
+	<div id="container">
+		<div class="greeting" id="greeting">
+			<h1 id="h1_title">GRA w 1000</h1>
+		</div>
+	</div>
+	<!-- <button onclick="openInfoWindow()">Otwórz okno</button>
+	<button onclick="CloseInfoWindow()">Zamknij okno</button> -->
+
+	<script>
+		startPanel();
+		showPlay();
+		addCrupier();
+		eyes();	
+	</script>
+{% endblock %}
