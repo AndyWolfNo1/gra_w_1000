@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>Logowanie</title>
+	</head>
+	<body>
+	<style>
+	body {
+		/*background:#5c5470; */
+		background-image: url("/static/image/2/cards.jpg");
+	}
+	.login {
+		width:20%;
+		height:auto;
+		margin-left:auto;
+		margin-right:auto;
+		text-align:center;
+		margin-top:15%;
+		background:#342b4a;
+		color:white;
+		display:flex;
+		flex-direction: column;
+		gap: 10px;
+		padding-left:2em;
+		padding-right:2em;
+		padding-bottom:2.5em;
+		border-radius:25px;
+		transition: .4s case-in-out;	
+	}
+	
+	.login form {
+		text-align: center;
+	}
+	
+	#error {
+		color:red;
+	}
+	</style>
+	<div class="login">
+		<h1>Logowanie</h1>
+		<form id="form" method="post" action="/login">
+		  <label for="username">Nazwa użytkownika:</label><br><br>
+		  <input type="text" id="username" name="username" required><br><br>
+		  <label for="password">Hasło:</label><br><br>
+		  <input type="password" id="password" name="password" required><br><br>
+		  <button type="submit">Zaloguj</button><br><br>
+		  <button onclick="location.href='/register'">Zarejestruj się</button><br>
+		  {% if error %}<span id="error"> {{error}} </span>{% endif %}
+		</form><br>
+	</div>
+	
+  </body>
+</html>

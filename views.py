@@ -1,98 +1,160 @@
 from flask import Flask
-from config import Config
 from flask import render_template
 from flask import request
 from flask import jsonify
+from flask import redirect
+from flask import url_for
+from flask import session
 from random import shuffle
 import jinja2
 from tysiac import *
-import pandas as pd
+import json
+import sqlite3
+
 
 app = Flask(__name__)
-app.config.from_object(Config)
+app.secret_key = b'fafafiansonoqifn;lkadav'
+
 env = jinja2.Environment(loader=jinja2.FileSystemLoader(['templates/'])) 
 app_name = "Gra w 1000"
-
-names = ['Marek', 'Stefan', 'Janusz', 'Bogdan']
+table = Table()
+names = ['Marek', 'Stefan', 'Janusz']
 players = [Player(name) for name in names]
-game = Game()
 
-@app.route('/',methods = ['POST', 'GET'])
+
+def get_db_connection():
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+@app.route('/')
 def start_panel():
-    return render_template('start_panel.html')
+    if 'logged_in' in session:
+        return render_template('start_panel.html', username=session['username'])
+    else:
+        return redirect(url_for('login'))
 
-@app.route('/game',methods = ['POST', 'GET'])
-def start():
-    if request.method == 'POST':
-        form_data = request.form
-        if form_data['name'] == '/musik':
-            game.step1()
-            adress = '/gra'
-            n_a = 'Rozdaj musik'
-            return render_template('start.html', adress=adress, n_a=n_a)
-        if form_data['name'] == '/gra':
-            game.step2()
-            if game.error == True:
-                return render_template('error.html')
-            if game.error == False:
-                adress = '/first_move'
-                n_a = 'Licytacja'
-                return render_template('start.html', adress=adress, n_a=n_a)
-        if form_data['name'] == '/first_move':
-            game.game_raport()
-            if game.moves == 7:
-                game.moves = 0
-            game.step3()
-            if game.moves < 6:
-                n_a = 'Graj'
-            if game.moves == 6:
-                n_a = "Dalej"
-            adress = '/first_move'
-            script = f"<script>my_f();</script>"
-            return render_template('start.html', adress=adress, n_a=n_a, script=script)
-    game.moves = 0
-    game.licit_val = 0
-    game.deal_the_cards(players)
-    game.auction()
-    game.test_cards = None
-    adress = '/musik'
-    n_a = 'Daj musik'
-    information = "Licytację wygrywa gracz {}, zabierz musik i rozpocznij grę.".format(game.players[game.max_auction_id[0]])
-    return render_template('start.html', adress=adress, n_a=n_a, info=information)
-
-@app.route('/licit',methods = ['POST', 'GET'])
-def licit():
-    adress = '/first_move'
-    n_a = 'Zacznij grę'
-    if request.method == 'POST':
-            f_d = request.form
-            licit = f_d['licit']
-            if licit != '':
-                game.licit_val = int(licit)
-            else:
-                game.licit_val = 100
-            return render_template('start.html', adress=adress, n_a=n_a)
+@app.route('/table',methods = ['POST', 'GET'])
+def table_panel():
+    if 'logged_in' in session:
+        return render_template('table.html', username=session['username'])
+    else:
+        return redirect(url_for('login'))
     
-@app.route('/test',methods = ['POST', 'GET'])
-def data():
-    df = pd.read_csv('test.csv')
-    return render_template('test2.html', tables=[df.to_html(classes='data')], titles=df.columns.values)
 
-@app.route('/process', methods=['POST'])
+@app.route('/game/<int:id_game>')
+def show_game(id_game):
+    if 'logged_in' in session:
+        game = table.return_game_by_id(id_game)
+        return render_template('show_game.html', game=game, username=session['username'])
+    else:
+        return redirect(url_for('login'))
+    
+
+@app.route('/process', methods=['POST','GET'])
 def process():
     json_data = request.get_json()
-    input_data = json_data['input']
-    output_data = input_data.upper()
-    #return jsonify(output=output_data)
-    return jsonify(output=['output_data', 'cos'])
+    process = int(json_data['process'])
+    if process == 0:
+        player = json_data['player']
+        player = Player(player)
+        id_game = json_data['id']
+        table.add_player_to_game(int(id_game), player)
+        print('dodano gracza {} do gry {}'.format(player.name, id_game))
+        res = table.return_json_players(int(id_game))
+        print("process 0")
+        return res
+    if process == 1:
+        id_game = json_data['id']
+        res = table.return_json_players(int(id_game))
+        print('process1')
+        return res
+    if process == 2:
+        creator_name = json_data['name']
+        game = Game()
+        table.add_game(game, creator_name)
+        print('process2')
+        data = {
+            "id": game.ID,
+            "creator" : creator_name,
+            "start_time": game.string_start_time
+                }
+        return json.dumps(data)
+    if process == 3:
+        table.check_old_games()
+        res = table.return_game_to_table()
+        print('process3')
+        return json.dumps(res)
+    # if process == 4:
+    #     user.change_name(json_data['username'])
+    #     print("process4")
+    #     return user.name
+    if process == 5:
+        json_data = request.get_json()
+        id_game = json_data['id']
+        table.activate_game_by_id(id_game)
+        print('process5')
+        return "success"
+  
+@app.route('/activate', methods=['GET'])
+def get_objects():
+    active_games = table.return_active_games()
+    print('activate')
+    return jsonify(active_games)
+      
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+
+        if password == confirm_password:
+            conn = get_db_connection()
+            c = conn.cursor()
+            c.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
+            conn.commit()
+            conn.close()
+            return redirect(url_for('login'))
+        else:
+            return render_template('register.html', error='Hasła nie są takie same.')
+
+    return render_template('register.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        conn = get_db_connection()
+        c = conn.cursor()
+        c.execute('SELECT * FROM users WHERE username = ? AND password = ?', (username, password))
+        user = c.fetchone()
+        conn.close()
+
+        if user is not None:
+            session['logged_in'] = True
+            session['username'] = user['username']
+            return redirect(url_for('table_panel'))
+        else:
+            error = 'Nieprawidłowa nazwa użytkownika lub hasło.'
+            return render_template('login.html', error=error)
+
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    session.pop('username', None)
+    return redirect(url_for('start_panel'))
 
 @app.context_processor
 def inject_variables():
     return dict(
         app_name=app_name,
-        game= game
+        table=table
         )
-
 
 if __name__ =='__main__':
     app.run(debug=True)

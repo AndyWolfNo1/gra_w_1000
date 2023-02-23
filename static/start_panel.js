@@ -1,3 +1,4 @@
+
 function startPanel() {
 	var container = document.getElementById("container");
 	var greeting = document.getElementById("greeting");
@@ -9,7 +10,7 @@ function startPanel() {
 	logo.style.position = "absolute";
 	logo.style.border = "0";
 	greeting.appendChild(logo);
-	//container.style.backgroundColor = "#dbd8e3";
+	document.body.style.backgroundColor = "#5c5470";
 };
 
 function showPlay() {
@@ -18,13 +19,11 @@ function showPlay() {
 	play.id = "show_play";
 	play.style.height = "620px";
 	play.style.width = "400px";
-	//play.style.backgroundColor = "#b3b3b3";
 	play.style.backgroundImage = 'url("/static/image/start_panel/czacha.png")';
 	play.style.backgroundSize = "cover";
 	play.style.backgroundPosition = "50% 50%";
 	play.style.borderRadius = "5px";
 	play.style.color = "black";
-	//play.style.border = "1px solid red";
 	play.style.padding = "20px";
 	play.style.position = "fixed";
 	play.style.top = "600px";
@@ -42,8 +41,8 @@ function showPlay() {
 	button.style.fontSize = "38px";
 	button.style.position = "absolute";
 	button.style.top = "62%";
-	button.style.left = "24%";
-	button.innerHTML = 'Symulacja gry';
+	button.style.left = "42%";
+	button.innerHTML = 'Graj';
 	button.onclick = function()
 		{
 		   dark_window();
@@ -144,7 +143,6 @@ function dark_window() {
 	div.style.backgroundColor = "black";
 	div.style.top = "-2%";
 	document.body.appendChild(div);
-	document.body.style.backgroundColor = "black";
 	var opacity = 0;
 	var intervalId = setInterval(function () {
 		opacity += 0.2;
@@ -166,6 +164,20 @@ function dark_window() {
 		}, 2000);
 		
 		setTimeout(function() {
-			window.location.replace("/game");
+			window.location.replace("/table");
 		}, 2000);
+};
+
+function getUserName() {
+	var username = prompt("Podaj swoją nazwę użytkownika:");
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", "/process", true);
+	xhr.setRequestHeader("Content-Type", "application/json");
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState === 4 && xhr.status === 200) {
+		};
+	};
+
+	var data = JSON.stringify({"process": 4, "username" : username});
+	xhr.send(data);
 };
